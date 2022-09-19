@@ -11,6 +11,8 @@ namespace InformationSecurity.ViewModels
     /// </summary>
     internal class MainWindowViewModel : ViewModelBase
     {
+        /// набор свойств для элементов
+                
         #region Заголовок окна
         /// <summary>
         /// Title field
@@ -25,6 +27,19 @@ namespace InformationSecurity.ViewModels
             get => _title;
             set => Set(ref _title, value); 
         }
+        #endregion
+
+        #region Статус
+        /// <summary>
+        /// Status field
+        /// </summary>
+        private string _status;
+
+        /// <summary>
+        /// Status property
+        /// </summary>
+        public string Status { get => _status; set => Set(ref _status, value); }
+        
         #endregion
     }
 }

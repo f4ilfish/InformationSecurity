@@ -27,7 +27,7 @@
         
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem>
-                <TextBlock Text="Test"/>
+                <TextBlock Text="{Binding Path=Status}"/>
             </StatusBarItem>
             <StatusBarItem>
                 <ProgressBar Width="100" Height="15"/>
