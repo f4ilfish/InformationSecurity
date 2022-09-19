@@ -6,6 +6,14 @@
         xmlns:vm="clr-namespace:InformationSecurity.ViewModels"
         xmlns:local="clr-namespace:InformationSecurity"
         mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"        
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
         Title="{Binding Path=Title}" Height="450" Width="800">
     <Window.DataContext>
         <vm:MainWindowViewModel/>
@@ -17,7 +25,9 @@
             <MenuItem Header="Файл">
                 <MenuItem Header="Открыть"></MenuItem>
                 <MenuItem Header="Сохранить"></MenuItem>
-                <MenuItem Header="Выход"></MenuItem>
+                <MenuItem Header="Выход" 
+                          Command="{Binding Path=CloseApplicationCommand}">
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="Помощь">
                 <MenuItem Header="Инструкция"></MenuItem>
@@ -35,7 +45,13 @@
         </StatusBar>
         
         <TabControl>
-            <TabItem Header="Шифр Цезаря">
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Шифр Цезаря"/>
+                    </StackPanel>
+                </TabItem.Header>
+                
                 <Grid ShowGridLines="True">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="0.1*"></RowDefinition>
@@ -48,6 +64,7 @@
                     </Grid.ColumnDefinitions>
                 </Grid>
             </TabItem>
+            
             <TabItem Header="Шифр Вижнера"></TabItem>
         </TabControl>
     
