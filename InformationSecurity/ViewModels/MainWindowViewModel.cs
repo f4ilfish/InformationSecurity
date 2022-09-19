@@ -22,11 +22,7 @@ namespace InformationSecurity.ViewModels
         /// <summary>
         /// Title property
         /// </summary>
-        public string Title 
-        {
-            get => _title;
-            set => Set(ref _title, value); 
-        }
+        public string Title { get => _title; set => Set(ref _title, value); }
         #endregion
 
         #region Статус
@@ -39,7 +35,6 @@ namespace InformationSecurity.ViewModels
         /// Status property
         /// </summary>
         public string Status { get => _status; set => Set(ref _status, value); }
-        
         #endregion
     }
 }
