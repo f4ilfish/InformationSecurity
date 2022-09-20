@@ -16,7 +16,7 @@ namespace InformationSecurity.ViewModels
         /// <summary>
         /// Title field
         /// </summary>
-        private string _title;
+        private string _title = "Information Security";
 
         /// <summary>
         /// Title property
@@ -28,7 +28,7 @@ namespace InformationSecurity.ViewModels
         /// <summary>
         /// Status field
         /// </summary>
-        private string _status;
+        private string _status = "Initialize";
 
         /// <summary>
         /// Status property

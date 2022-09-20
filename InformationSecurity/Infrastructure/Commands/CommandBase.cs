@@ -11,7 +11,7 @@ namespace InformationSecurity.Infrastructure.Commands
         /// <summary>
         /// CanExecuteChanged event
         /// </summary>
-        public event EventHandler CanExecuteChanged
+        public event EventHandler? CanExecuteChanged
         {
             add => CommandManager.RequerySuggested += value;
             remove => CommandManager.RequerySuggested -= value;
