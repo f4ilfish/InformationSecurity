@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace InformationSecurityConsoleTest
+﻿namespace InformationSecurityConsoleTest
 {
     internal class Program
     {
@@ -32,28 +30,34 @@ namespace InformationSecurityConsoleTest
             //Console.WriteLine(reverseOutputString);
 
             var inputString = "1234567890 ABCDIFGHIJKLMNOPQRST abcdifghijklmn АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ абвгдежзиклмнопрстуфхцчшщъыьэюя";
-            var keyString = "core";
+            var keyString = "1 12 '''12 ауауцц core";
 
             Console.WriteLine(inputString);
 
-            var inputCharArray = inputString.ToCharArray();
-            var keyCharArray = keyString.ToCharArray();
+            //var inputCharArray = inputString.ToCharArray();
+            //var keyCharArray = keyString.ToCharArray();
 
-            string encryptedString = string.Empty;
-            int keyLength = keyCharArray.Length;
-            int keyIndex = 0;
-            
-            foreach (char c in inputCharArray)
-            {
-                encryptedString += Encrypt.GetVigenerEncryptedChar(c, keyCharArray[keyIndex]);
-                keyIndex++;
-                if (keyIndex == keyLength)
-                {
-                    keyIndex = 0;
-                }
-            }
+            //string encryptedString = string.Empty;
+            //int keyLength = keyCharArray.Length;
+            //int keyIndex = 0;
 
-            Console.WriteLine(encryptedString.ToString());
+            //foreach (char c in inputCharArray)
+            //{
+            //    encryptedString += CharEncryptor.GetVigenerEncryptedChar(c, keyCharArray[keyIndex]);
+            //    keyIndex++;
+            //    if (keyIndex == keyLength)
+            //    {
+            //        keyIndex = 0;
+            //    }
+            //}
+
+            //Console.WriteLine(encryptedString.ToString());
+
+            var encryptedString = StringEncryptor.GetVigenerEncyptedString(inputString, keyString, false);
+            var decryptedString = StringEncryptor.GetVigenerEncyptedString(encryptedString, keyString, true);
+
+            Console.WriteLine(encryptedString);
+            Console.WriteLine(decryptedString);
         }
     }
 }

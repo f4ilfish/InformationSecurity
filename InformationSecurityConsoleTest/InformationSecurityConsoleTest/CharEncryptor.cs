@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Globalization;
-
-namespace InformationSecurityConsoleTest
+﻿namespace InformationSecurityConsoleTest
 {
     /// <summary>
-    /// Encryptor class
+    /// Char encryptor class
     /// </summary>
-    internal static class Encrypt
+    internal static class CharEncryptor
     {
         /// <summary>
         /// Is latin char meth
@@ -52,7 +45,7 @@ namespace InformationSecurityConsoleTest
         /// <param name="keyInt">Int shift key</param>
         /// <param name="decryption">Is decryption</param>
         /// <returns>Encrypted char by Ceaser alg</returns>
-        public static char GetCeasarEncryptedChar(char ch, int keyInt, bool decryption = false)
+        public static char GetCeasarEncryptedChar(char ch, int keyInt, bool decryption)
         {
             if (char.IsLetter(ch))
             {
@@ -161,7 +154,7 @@ namespace InformationSecurityConsoleTest
         /// <param name="keyCh">Shift key char</param>
         /// <param name="decryption">Is decryption</param>
         /// <returns>Encrypted char by Vigener alg</returns>
-        public static char GetVigenerEncryptedChar(char ch, char keyCh, bool decryption = false)
+        public static char GetVigenerEncryptedChar(char ch, char keyCh, bool decryption)
         {
             if (char.IsLetterOrDigit(keyCh))
             {
@@ -239,6 +232,5 @@ namespace InformationSecurityConsoleTest
                 return ch;
             }
         }
-
     }
 }

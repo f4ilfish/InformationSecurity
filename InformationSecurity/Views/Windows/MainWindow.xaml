@@ -19,61 +19,50 @@
         TextOptions.TextRenderingMode="Auto"        
         
         
-        Title="{Binding Path=Title}" Height="450" Width="800">
+        Title="{Binding Path=Title}" Height="450" Width="800" MinHeight="450" MinWidth="800">
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
 
-    <DockPanel>
-
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="Файл">
-                <MenuItem Header="Открыть"></MenuItem>
-                <MenuItem Header="Сохранить"></MenuItem>
-                <MenuItem Header="Выход" 
-                          Command="{Binding Path=CloseApplicationCommand}">
-                </MenuItem>
-            </MenuItem>
-            <MenuItem Header="Помощь">
-                <MenuItem Header="Инструкция"></MenuItem>
-                <MenuItem Header="О программе"></MenuItem>
-            </MenuItem>
-        </Menu>
-
-        <StatusBar DockPanel.Dock="Bottom">
-            <StatusBarItem>
-                <TextBlock Text="{Binding Path=Status}"/>
-            </StatusBarItem>
-            <StatusBarItem>
-                <ProgressBar Width="100" Height="15"/>
-            </StatusBarItem>
-        </StatusBar>
-
-        <TabControl>
-            <TabItem>
-                <TabItem.Header>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Шифр Цезаря"/>
-                    </StackPanel>
-                </TabItem.Header>
-                <Grid ShowGridLines="True">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="0.1*"></RowDefinition>
-                        <RowDefinition></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition></ColumnDefinition>
-                        <ColumnDefinition Width="0.1*"></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Шифр Вижнера"></TabItem>
-            <TabItem Header="Шифр Загитова"></TabItem>
-            <TabItem Header="Шифр Мизева"></TabItem>
-        </TabControl>
-
-    </DockPanel>
-
+    <TabControl>
+        <TabItem>
+            <TabItem.Header>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <materialDesign:PackIcon Kind="EncryptionSecure" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Шифрование" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </TabItem.Header>
+            <Grid ShowGridLines="False">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.3*"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="0.15*"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <DockPanel Grid.Column="1" Grid.Row="1" VerticalAlignment="Center">
+                    <Button DockPanel.Dock="Top" Height="100" Margin="0, 10, 0, 10">
+                        <materialDesign:PackIcon Kind="ArrowRight" HorizontalAlignment="Center" VerticalAlignment="Center" Width="16"/>
+                    </Button>
+                    <Button DockPanel.Dock="Bottom" Height="100" Margin="0, 10, 0, 10">
+                        <materialDesign:PackIcon Kind="ArrowLeft" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
+                </DockPanel>
+                <TextBox Grid.Column="0" Grid.Row="1" Margin="20" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" Language="ru-ru"/>
+                <TextBox Grid.Column="2" Grid.Row="1" Margin="20" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" Language="ru-ru"/>
+                <StackPanel Grid.Column="0" Grid.Row="0" Margin="10" VerticalAlignment="Top">
+                    <RadioButton GroupName="EncryptionMethods" Content="Метод Цезаря" IsChecked="True" Margin="5, 5, 0, 0"/>
+                    <RadioButton GroupName="EncryptionMethods" Content="Метод Виженера" Margin="5, 0, 5, 0"/>
+                </StackPanel>
+                <StackPanel Grid.Column="0" Grid.Row="0" Margin="10" VerticalAlignment="Bottom" Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Key" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="7, 0, 0, 0" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                    <TextBox Width="300" Margin="5, 0, 0, 0" VerticalAlignment="Center" />
+                </StackPanel>
+            </Grid>
+        </TabItem>
+        <TabItem Header="ЛР 2"></TabItem>
+    </TabControl>
 
 </Window>
