@@ -4,9 +4,42 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:InformationSecurity.Views.Windows"
+        xmlns:vm="clr-namespace:InformationSecurity.ViewModels"
         mc:Ignorable="d"
-        Title="VigenerTableWindow" Height="450" Width="800">
-    <Grid>
         
-    </Grid>
+        xmlns:dataGrid2D="http://gu.se/DataGrid2D"
+        
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        
+        FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
+        TextElement.FontWeight="Medium"
+        TextElement.FontSize="14"
+        
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"
+        
+        Title="Таблица Виженера" Height="550" Width="800">
+    <Window.DataContext>
+        <vm:VigenerTableViewModel/>
+    </Window.DataContext>
+
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+            <Button Margin="15, 5, 0, 5" Command="{Binding Path=SaveVigenerTableCommand}">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ContentSaveAdd" VerticalAlignment="Center"/>
+                        <TextBlock Text="Сохранить" Margin="5" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+        </StackPanel>
+        <DataGrid HeadersVisibility="None" AutoGenerateColumns="False" ItemsSource="{Binding Path=VigenerTable}" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
 </Window>

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Win32;
 using System.IO;
+using InformationSecurity.Views.Windows;
 
 namespace InformationSecurity.ViewModels
 {
@@ -379,6 +380,32 @@ namespace InformationSecurity.ViewModels
 
         #endregion
 
+        #region OpenVigenerTableCommand
+
+        /// <summary>
+        /// OpenVigenerTableCommand field
+        /// </summary>
+        public ICommand OpenVigenerTableCommand { get; }
+
+        /// <summary>
+        /// OpenVigenerTableCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        private void OnOpenVigenerTableCommandExecuted(object p)
+        {
+            VigenerTableWindow vigenerTableWindow = new VigenerTableWindow();
+            vigenerTableWindow.Show();
+        }
+
+        /// <summary>
+        /// Can OpenVigenerTableCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private bool CanOpenVigenerTableCommandExecute(object p) => true;
+
+        #endregion
+
         #endregion
 
         /// <summary>
@@ -405,6 +432,9 @@ namespace InformationSecurity.ViewModels
 
             SaveCommand = new RelayCommand(OnSaveCommandExecuted, 
                                            CanSaveCommandExecute);
+
+            OpenVigenerTableCommand = new RelayCommand(OnOpenVigenerTableCommandExecuted, 
+                                                       CanOpenVigenerTableCommandExecute);
 
             #endregion
         }
