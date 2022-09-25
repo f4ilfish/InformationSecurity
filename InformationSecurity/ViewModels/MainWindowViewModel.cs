@@ -1,9 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.ComponentModel;
-using System.Collections;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.Win32;
@@ -16,31 +12,8 @@ namespace InformationSecurity.ViewModels
     /// <summary>
     /// MainWindowViewModel class
     /// </summary>
-    internal class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
-    {               
-        #region Заголовок окна
-        /// <summary>
-        /// Title field
-        /// </summary>
-        private string _title = "Information Security";
-
-        /// <summary>
-        /// Title property
-        /// </summary>
-        public string Title { get => _title; set => Set(ref _title, value); }
-        #endregion
-
-        #region Статус
-        /// <summary>
-        /// Status field
-        /// </summary>
-        private string _status = "Initialize";
-
-        /// <summary>
-        /// Status property
-        /// </summary>
-        public string Status { get => _status; set => Set(ref _status, value); }
-        #endregion
+    internal class MainWindowViewModel : ViewModelBase
+    {
 
         #region Текст для шифрования
 
@@ -89,10 +62,7 @@ namespace InformationSecurity.ViewModels
                 
                 ClearErrors(nameof(EncryptionKey));
 
-                if (EncryptionAlg == "Метод Цезаря" && !int.TryParse(_encryptionKey, out _))
-                {
-                    AddError(nameof(EncryptionKey), "Ключ должен быть целочисленным");
-                }
+                ValidateKey();
             } 
         }
 
@@ -100,8 +70,14 @@ namespace InformationSecurity.ViewModels
 
         #region Алгоритм шифрования / расшифрования
 
+        /// <summary>
+        /// Encryption (decryption) alg field
+        /// </summary>
         private string _encryptionAlg;
 
+        /// <summary>
+        /// Encryption (decryption) alg property
+        /// </summary>
         public string EncryptionAlg 
         { 
             get => _encryptionAlg;
@@ -111,9 +87,26 @@ namespace InformationSecurity.ViewModels
 
                 ClearErrors(nameof(EncryptionKey));
 
-                OnPropertyChanged(nameof(EncryptionKey));
+                ValidateKey();
             }  
         
+        }
+
+        #endregion
+
+        #region Валидация
+
+        /// <summary>
+        /// Key validation method
+        /// </summary>
+        public void ValidateKey()
+        {
+            if (EncryptionAlg == "Метод Цезаря" &&
+                !string.IsNullOrEmpty(EncryptionKey) &&
+                !int.TryParse(EncryptionKey, out _))
+            {
+                AddError(nameof(EncryptionKey), "Ключ должен быть целочисленным");
+            }
         }
 
         #endregion
@@ -413,7 +406,7 @@ namespace InformationSecurity.ViewModels
         /// </summary>
         public MainWindowViewModel()
         {
-            #region Команды
+            #region Инициализация команд
             
             CloseApplicationCommand = new RelayCommand(OnCloseApplicationCommandExecuted,
                                                        CanCloseApplicationCommandExecute);
@@ -438,71 +431,5 @@ namespace InformationSecurity.ViewModels
 
             #endregion
         }
-
-        #region Обработка ошибок
-
-        /// <summary>
-        /// PropertyErrors field
-        /// </summary>
-        private readonly Dictionary<string, List<string>> _propertyErrors = new Dictionary<string, List<string>>();
-
-        /// <summary>
-        /// HasErrors method
-        /// </summary>
-        public bool HasErrors => _propertyErrors.Any();
-
-        /// <summary>
-        /// Get propertie's errors method
-        /// </summary>
-        /// <param name="propertyName">Propety name</param>
-        /// <returns></returns>
-        public IEnumerable GetErrors(string? propertyName)
-        {
-            return _propertyErrors.GetValueOrDefault(propertyName, null);
-        }
-
-        /// <summary>
-        /// ErrorsChanged event
-        /// </summary>
-        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
-
-        /// <summary>
-        /// Add propertie's error method
-        /// </summary>
-        /// <param name="propertyName">Property name</param>
-        /// <param name="errorMessage">Text message</param>
-        public void AddError(string propertyName, string errorMessage)
-        {
-            if (!_propertyErrors.ContainsKey(propertyName))
-            {
-                _propertyErrors.Add(propertyName, new List<string>());
-            }
-
-            _propertyErrors[propertyName].Add(errorMessage);
-            OnErrorsChanged(propertyName);
-        }
-
-        /// <summary>
-        /// OnErrorsChanged by property method
-        /// </summary>
-        /// <param name="propertyName">Property name</param>
-        public void OnErrorsChanged(string propertyName)
-        {
-            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
-        }
-
-        /// <summary>
-        /// Clear propertie's errors
-        /// </summary>
-        /// <param name="propertyName"></param>
-        public void ClearErrors(string propertyName)
-        {
-            if (_propertyErrors.Remove(propertyName))
-            {
-                OnErrorsChanged(propertyName);
-            }
-        }
-
-        #endregion
     }
 }

@@ -96,33 +96,7 @@ namespace InformationSecurity.ViewModels
         /// </summary>
         public VigenerTableViewModel()
         {
-            #region Обсчет таблицы Виженера
-
-            string encryptionAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-                                                      "abcdifghijklmnopqrstuvwxyz" +
-                                                      "АБВГДЕЖЗИЙКЛМНОПРСТФХЦЧШЩЪЫЬЭЮЯ" +
-                                                      "абвгдежзиклмнопрстуфхцчшщъыьэюя" +
-                                                      "0123456789";
-
-            var vigenerTable = new List<string>();
-            vigenerTable.Add(encryptionAlphabet);
-
-            foreach (char ch in encryptionAlphabet)
-            {
-                var vigenerTableRow = string.Empty;
-                vigenerTableRow += ch;
-
-                foreach (char keyCh in encryptionAlphabet)
-                {
-                    vigenerTableRow += CharEncryptor.GetVigenerEncryptedChar(keyCh, ch, false);
-                }
-
-                vigenerTable.Add(vigenerTableRow);
-            }
-
-            VigenerTable = vigenerTable;
-
-            #endregion
+            VigenerTable = VigenerTableCreator.GetVigenerTable();
 
             SaveVigenerTableCommand = new RelayCommand(OnSaveVigenerTableExecuted, 
                                                        CanSaveVigenerTableCommandExecute);
