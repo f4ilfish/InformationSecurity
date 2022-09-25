@@ -1,4 +1,10 @@
-﻿namespace InformationSecurityConsoleTest
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace InformationSecurity.Infrastructure.Encryptors
 {
     /// <summary>
     /// String encryptor class
@@ -20,8 +26,8 @@
             for (int i = 0; i < encryptedCharArray.Length; i++)
             {
                 encryptedCharArray[i] = CharEncryptor.
-                                        GetCeasarEncryptedChar(charArrayToEncrypt[i], 
-                                                                             keyInt, 
+                                        GetCeasarEncryptedChar(charArrayToEncrypt[i],
+                                                                             keyInt,
                                                                              decryption);
             }
 

@@ -5,9 +5,13 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Infrastructure\Icon\favicon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Data\" />
+    <Folder Include="Infrastructure\Icon\" />
+    <Folder Include="Infrastructure\Validation\" />
     <Folder Include="Models\" />
     <Folder Include="Services\" />
   </ItemGroup>

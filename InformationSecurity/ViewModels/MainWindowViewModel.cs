@@ -2,16 +2,21 @@
 using System.Windows;
 using System.Windows.Input;
 using InformationSecurity.Infrastructure.Commands;
+using InformationSecurity.Infrastructure.Encryptors;
+using System.ComponentModel;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Win32;
+using System.IO;
 
 namespace InformationSecurity.ViewModels
 {
     /// <summary>
     /// MainWindowViewModel class
     /// </summary>
-    internal class MainWindowViewModel : ViewModelBase
-    {
-        /// набор свойств для элементов
-                
+    internal class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
+    {               
         #region Заголовок окна
         /// <summary>
         /// Title field
@@ -64,7 +69,7 @@ namespace InformationSecurity.ViewModels
 
         #endregion
 
-        #region Ключь шифрования
+        #region Ключ шифрования / расшифрования
 
         /// <summary>
         /// Key to encryption field
@@ -74,15 +79,41 @@ namespace InformationSecurity.ViewModels
         /// <summary>
         /// Key to encryption property
         /// </summary>
-        public string EncryptionKey { get => _encryptionKey; set => Set(ref _encryptionKey, value); }
+        public string EncryptionKey 
+        { 
+            get => _encryptionKey; 
+            set 
+            {
+                Set(ref _encryptionKey, value);
+                
+                ClearErrors(nameof(EncryptionKey));
+
+                if (EncryptionAlg == "Метод Цезаря" && !int.TryParse(_encryptionKey, out _))
+                {
+                    AddError(nameof(EncryptionKey), "Ключ должен быть целочисленным");
+                }
+            } 
+        }
 
         #endregion
 
-        #region Алгоритм шифрования
+        #region Алгоритм шифрования / расшифрования
 
         private string _encryptionAlg;
 
-        public string EncryptionAlg { get => _encryptionAlg; set => Set(ref _encryptionAlg, value); }
+        public string EncryptionAlg 
+        { 
+            get => _encryptionAlg;
+            set 
+            {
+                Set(ref _encryptionAlg, value);
+
+                ClearErrors(nameof(EncryptionKey));
+
+                OnPropertyChanged(nameof(EncryptionKey));
+            }  
+        
+        }
 
         #endregion
 
@@ -129,11 +160,12 @@ namespace InformationSecurity.ViewModels
             switch (EncryptionAlg)
             {
                 case "Метод Цезаря":
-                    TextToDecryption = InformationSecurityConsoleTest.StringEncryptor
+                    TextToDecryption = StringEncryptor
                         .GetCeaserEncryptedString(TextToEncryption, int.Parse(EncryptionKey), false);
+
                     break;
                 case "Метод Виженера":
-                    TextToDecryption = InformationSecurityConsoleTest.StringEncryptor
+                    TextToDecryption = StringEncryptor
                         .GetVigenerEncyptedString(TextToEncryption, EncryptionKey, false);
                     break;
                 default:
@@ -143,7 +175,7 @@ namespace InformationSecurity.ViewModels
         }
 
         /// <summary>
-        /// Can CloseApplicationCommand execute method
+        /// Can EncryptCommand execute method
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
@@ -151,7 +183,8 @@ namespace InformationSecurity.ViewModels
         {
             if (!string.IsNullOrEmpty(TextToEncryption) &&
                !string.IsNullOrEmpty(EncryptionAlg) &&
-               !string.IsNullOrEmpty(EncryptionKey))
+               !string.IsNullOrEmpty(EncryptionKey) &&
+               !HasErrors)
             {
                 return true;
             }
@@ -161,6 +194,163 @@ namespace InformationSecurity.ViewModels
             }
         }
 
+        #endregion
+
+        #region DecryptCommand
+
+        /// <summary>
+        /// DecryptCommand field
+        /// </summary>
+        public ICommand DecryptCommand { get; set; }
+
+        /// <summary>
+        /// DecryptCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        private void OnDecryptCommandExecuted(object p)
+        {
+            switch (EncryptionAlg)
+            {
+                case "Метод Цезаря":
+                    TextToEncryption = StringEncryptor
+                        .GetCeaserEncryptedString(TextToDecryption, int.Parse(EncryptionKey), true);
+                    break;
+                case "Метод Виженера":
+                    TextToEncryption = StringEncryptor
+                        .GetVigenerEncyptedString(TextToDecryption, EncryptionKey, true);
+                    break;
+                default:
+                    throw new ArgumentException("Unknown Decryption alg");
+
+            }
+        }
+
+        /// <summary>
+        /// Can DecryptCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private bool CanDecryptCommandExecute(object p)
+        {
+            if (!string.IsNullOrEmpty(TextToDecryption) &&
+               !string.IsNullOrEmpty(EncryptionAlg) &&
+               !string.IsNullOrEmpty(EncryptionKey) &&
+               !HasErrors)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region DownloadCommand
+
+        /// <summary>
+        /// DownloadCommand field
+        /// </summary>
+        public ICommand DownloadCommand { get; }
+
+        /// <summary>
+        /// DownloadCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        private void OnDownloadCommandExecuted(object p)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Title = "Загрузить текстовый файл",
+                Filter = "Текстовый файл (*.txt)|*.txt"
+            };
+
+            bool? response = openFileDialog.ShowDialog();
+
+            if (response == false)
+            {
+                return;
+            }
+
+            try
+            {
+                using (StreamReader streamReader = new StreamReader(openFileDialog.FileName))
+                {
+                    TextToEncryption = streamReader.ReadToEnd();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Can DownloadCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private bool CanDownloadCommandExecute(object p) => true;
+
+        #endregion
+
+        #region SaveCommand
+
+        /// <summary>
+        /// SaveCommand field
+        /// </summary>
+        public ICommand SaveCommand { get; }
+
+        /// <summary>
+        /// SaveCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        private void OnSaveCommandExecuted(object p)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Title = "Сохранить результат",
+                Filter = "Текстовый файл (*.txt)|*.txt",
+                AddExtension = true
+            };
+
+            bool? response = saveFileDialog.ShowDialog();
+
+            if (response == false)
+            {
+                return;
+            }
+
+            try
+            {
+                using (StreamWriter streamWriter = new StreamWriter(saveFileDialog.FileName))
+                {
+                    streamWriter.Write(TextToDecryption);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Can SaveCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private bool CanSaveCommandExecute(object p)
+        {
+            if (!string.IsNullOrEmpty(TextToDecryption))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         #endregion
 
@@ -186,12 +376,14 @@ namespace InformationSecurity.ViewModels
         /// <param name="p"></param>
         /// <returns></returns>
         private bool CanCloseApplicationCommandExecute(object p) => true;
-        
-        #endregion
-        
+
         #endregion
 
+        #endregion
 
+        /// <summary>
+        /// MainWindowViewModel constructor
+        /// </summary>
         public MainWindowViewModel()
         {
             #region Команды
@@ -205,7 +397,55 @@ namespace InformationSecurity.ViewModels
             EncryptCommand = new RelayCommand(OnEncryptCommandExecuted, 
                                               CanEncryptCommandExecute);
 
+            DecryptCommand = new RelayCommand(OnDecryptCommandExecuted, 
+                                              CanDecryptCommandExecute);
+
+            DownloadCommand = new RelayCommand(OnDownloadCommandExecuted, 
+                                               CanDownloadCommandExecute);
+
+            SaveCommand = new RelayCommand(OnSaveCommandExecuted, 
+                                           CanSaveCommandExecute);
+
             #endregion
         }
+
+        #region Валидация
+
+        private readonly Dictionary<string, List<string>> _propertyErrors = new Dictionary<string, List<string>>();
+
+        public bool HasErrors => _propertyErrors.Any();
+
+        public IEnumerable GetErrors(string? propertyName)
+        {
+            return _propertyErrors.GetValueOrDefault(propertyName, null);
+        }
+
+        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+
+        public void AddError(string propertyName, string errorMessage)
+        {
+            if (!_propertyErrors.ContainsKey(propertyName))
+            {
+                _propertyErrors.Add(propertyName, new List<string>());
+            }
+
+            _propertyErrors[propertyName].Add(errorMessage);
+            OnErrorsChanged(propertyName);
+        }
+
+        public void OnErrorsChanged(string propertyName)
+        {
+            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+        }
+
+        public void ClearErrors(string propertyName)
+        {
+            if (_propertyErrors.Remove(propertyName))
+            {
+                OnErrorsChanged(propertyName);
+            }
+        }
+
+        #endregion
     }
 }

@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace InformationSecurityConsoleTest
+namespace InformationSecurity.Infrastructure.Encryptors
 {
     /// <summary>
     /// Char encryptor class
     /// </summary>
-    internal static class CharEncryptor
+    internal class CharEncryptor
     {
         /// <summary>
         /// Is latin char meth
@@ -166,9 +166,9 @@ namespace InformationSecurityConsoleTest
                     {
                         var latinAlphabetLenght = 26;
                         char startChar;
-                        
-                        var key = decryption ? - (GetKey(keyCh) % latinAlphabetLenght) 
-                                                :(GetKey(keyCh) % latinAlphabetLenght);
+
+                        var key = decryption ? -(GetKey(keyCh) % latinAlphabetLenght)
+                                                : (GetKey(keyCh) % latinAlphabetLenght);
 
                         if (key >= 0)
                         {
@@ -210,7 +210,7 @@ namespace InformationSecurityConsoleTest
                     var numericAlphabetLenght = 10;
                     char startChar;
 
-                    var key = decryption ? - (GetKey(keyCh) % numericAlphabetLenght)
+                    var key = decryption ? -(GetKey(keyCh) % numericAlphabetLenght)
                                            : (GetKey(keyCh) % numericAlphabetLenght);
 
                     if (key >= 0)
