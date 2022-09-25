@@ -9,6 +9,9 @@ using InformationSecurity.Infrastructure.Commands;
 
 namespace InformationSecurity.ViewModels
 {
+    /// <summary>
+    /// VigenerTableViewModel class
+    /// </summary>
     internal class VigenerTableViewModel : ViewModelBase
     {
         #region SaveVigenerTableCommand
@@ -74,6 +77,8 @@ namespace InformationSecurity.ViewModels
 
         #endregion
 
+        #region Таблица Виженера
+
         /// <summary>
         /// Vigener Table field
         /// </summary>
@@ -84,11 +89,15 @@ namespace InformationSecurity.ViewModels
         /// </summary>
         public List<string> VigenerTable { get => _vigenerTable; set => Set(ref _vigenerTable, value); }
 
+        #endregion
+
         /// <summary>
         /// VigenerTableViewModel constructor
         /// </summary>
         public VigenerTableViewModel()
         {
+            #region Обсчет таблицы Виженера
+
             string encryptionAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
                                                       "abcdifghijklmnopqrstuvwxyz" +
                                                       "АБВГДЕЖЗИЙКЛМНОПРСТФХЦЧШЩЪЫЬЭЮЯ" +
@@ -113,7 +122,10 @@ namespace InformationSecurity.ViewModels
 
             VigenerTable = vigenerTable;
 
-            SaveVigenerTableCommand = new RelayCommand(OnSaveVigenerTableExecuted, CanSaveVigenerTableCommandExecute);
+            #endregion
+
+            SaveVigenerTableCommand = new RelayCommand(OnSaveVigenerTableExecuted, 
+                                                       CanSaveVigenerTableCommandExecute);
         }
     }
 }

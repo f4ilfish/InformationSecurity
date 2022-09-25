@@ -11,7 +11,6 @@
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="Infrastructure\Icon\" />
-    <Folder Include="Infrastructure\Validation\" />
     <Folder Include="Models\" />
     <Folder Include="Services\" />
   </ItemGroup>

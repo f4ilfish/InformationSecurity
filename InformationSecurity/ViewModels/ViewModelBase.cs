@@ -9,6 +9,8 @@ namespace InformationSecurity.ViewModels
     /// </summary>
     internal abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
     {
+        #region INotifyPropertyChanged
+        
         /// <summary>
         /// Property changed event field
         /// </summary>
@@ -39,6 +41,10 @@ namespace InformationSecurity.ViewModels
             return true;
         }
 
+        #endregion
+
+        #region IDisposable
+
         //~ViewModelBase()
         //{
         //    Dispose(false);
@@ -60,5 +66,7 @@ namespace InformationSecurity.ViewModels
             if (!Disposing || _Disposed) return;
             _Disposed = true;
         }
+
+        #endregion
     }
 }
