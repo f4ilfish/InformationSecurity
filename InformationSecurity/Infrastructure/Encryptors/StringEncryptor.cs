@@ -47,7 +47,8 @@
             foreach (char c in charArrayToEncrypt)
             {
                 encryptedString += CharEncryptor.GetVigenerEncryptedChar(c, keyCharArray[keyIndex], decryption);
-                keyIndex++;
+                
+                if (char.IsLetterOrDigit(c)) keyIndex++;
 
                 if (keyIndex == keyLength) keyIndex = 0;
             }

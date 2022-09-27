@@ -24,6 +24,7 @@
     </Window.DataContext>
 
     <DockPanel>
+        
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Файл">
                 <MenuItem Header="Открыть" Command="{Binding Path=DownloadCommand}"/>
@@ -35,15 +36,17 @@
                 <MenuItem Header="О программе"/>
             </MenuItem>
         </Menu>
-        
+
         <TabControl>
             <TabItem>
+                <!--Вкладка шифрования-->
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <materialDesign:PackIcon Kind="EncryptionSecure" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         <TextBlock Text="Шифрование" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
+
                 <Grid ShowGridLines="False">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="0.3*"></RowDefinition>
@@ -74,8 +77,67 @@
                     </StackPanel>
                 </Grid>
             </TabItem>
-            <TabItem Header="ЛР 2"></TabItem>
-        </TabControl>
 
+            <!--Вкладка обмена ключами-->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <materialDesign:PackIcon Kind="KeyChain" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Обмен ключами" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <Grid ShowGridLines="False">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.35*"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition Width="0.1*"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <DockPanel Grid.Column="1" Grid.Row="1" VerticalAlignment="Center">
+                        
+                    </DockPanel>
+                    <TextBox Text="{Binding Path=AliceText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="0" Grid.Row="1" Margin="20" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" Language="ru-ru" AcceptsReturn="True"/>
+                    <TextBox Text="{Binding Path=BobText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2" Grid.Row="1" Margin="20" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" Language="ru-ru" AcceptsReturn="True"/>
+                    <StackPanel>
+                        <StackPanel Grid.Column="0" Grid.Row="0" Margin="5" VerticalAlignment="Center" Orientation="Horizontal">
+                            <StackPanel Margin="3" VerticalAlignment="Bottom" Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="AlphaGBox" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="15, 0, 0, 0" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                                <TextBox Text="{Binding Path=G, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" Margin="3" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Margin="3" VerticalAlignment="Bottom" Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="AlphaPBox" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="15, 0, 0, 0" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                                <TextBox Text="{Binding Path=P, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" Margin="3" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Grid.Column="0" Grid.Row="0" Margin="5" VerticalAlignment="Center" Orientation="Horizontal">
+                            <Button Margin="35, 15, 0, 5" Command="{Binding Path=KeyExchangeCommand}" Cursor="Hand">
+                                <Button.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="SwapHorizontalBold" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Обмен" Margin="5" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                            <Button Margin="45, 15, 0, 5" Command="{Binding Path=RefreshCommand}">
+                                <Button.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Delete" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Сброс" Margin="5" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+
+            </TabItem>
+
+            
+
+        </TabControl>
     </DockPanel>
 </Window>

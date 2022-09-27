@@ -14,6 +14,7 @@ namespace InformationSecurity.ViewModels
     /// </summary>
     internal class MainWindowViewModel : ViewModelBase
     {
+        #region Шифрование
 
         #region Текст для шифрования
 
@@ -94,7 +95,7 @@ namespace InformationSecurity.ViewModels
 
         #endregion
 
-        #region Валидация
+        #region ValidateKey
 
         /// <summary>
         /// Key validation method
@@ -108,6 +109,165 @@ namespace InformationSecurity.ViewModels
                 AddError(nameof(EncryptionKey), "Ключ должен быть целочисленным");
             }
         }
+
+        #endregion
+
+        #endregion
+
+        #region Обмен ключами
+
+        #region p
+
+        /// <summary>
+        /// g field
+        /// </summary>
+        private string _p = string.Empty;
+
+        /// <summary>
+        /// P property
+        /// </summary>
+        public string P
+        {
+            get => _p;
+            set
+            {
+                Set(ref _p, value);
+
+                ClearErrors(nameof(P));
+
+                if (!string.IsNullOrEmpty(P) &&
+                    !int.TryParse(P, out _))
+                {
+                    AddError(nameof(P), "P должен быть целочисленным");
+                }
+                
+                if(int.TryParse(P, out var n))
+                {
+                    if (!(n > 1)) AddError(nameof(P), "P должен быть больше 1");
+
+                    for (int i = 2; i < n; i++)
+                    {
+                        if (n % i == 0)
+                        {
+                            AddError(nameof(P), "P не является простым числом");
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region g
+
+        /// <summary>
+        /// g field
+        /// </summary>
+        private string _g = string.Empty;
+
+        /// <summary>
+        /// P property
+        /// </summary>
+        public string G
+        {
+            get => _g;
+            set
+            {
+                Set(ref _g, value);
+
+                ClearErrors(nameof(G));
+
+                if (!string.IsNullOrEmpty(G) 
+                    && !int.TryParse(G, out _))
+                {
+                    AddError(nameof(G), "G должен быть целочисленным");
+                }
+
+                if (int.TryParse(G, out var n))
+                {
+                    if (!(n > 1) || (n >= 10)) AddError(nameof(G), "G должен быть в диапазоне 1...9");
+
+                    for (int i = 2; i < n; i++)
+                    {
+                        if (n % i == 0)
+                        {
+                            AddError(nameof(G), "G не является простым числом");
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region Текст Алисы
+
+        /// <summary>
+        /// Alice's text field
+        /// </summary>
+        private string _aliceText = string.Empty;
+
+        /// <summary>
+        /// Alice's text property
+        /// </summary>
+        public string AliceText { get => _aliceText; set => Set(ref _aliceText, value); }
+
+        #endregion
+
+        #region Текст Боба
+
+        /// <summary>
+        /// Bob's text field
+        /// </summary>
+        private string _bobText = string.Empty;
+
+        /// <summary>
+        /// Bob's text property
+        /// </summary>
+        public string BobText { get => _bobText; set => Set(ref _bobText, value); }
+
+        #endregion
+
+        #region RefreshCommand
+
+        /// <summary>
+        /// RefreshCommand field
+        /// </summary>
+        public ICommand RefreshCommand { get; set; }
+
+        /// <summary>
+        /// RefreshCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        private void OnRefreshCommandExecuted(object p)
+        {
+            P = string.Empty;
+            G = string.Empty;
+            AliceText = string.Empty;
+            BobText = string.Empty;
+        }
+
+        /// <summary>
+        /// Can RefreshCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private bool CanRefreshCommandExecute(object p)
+        {
+            if (!string.IsNullOrEmpty(P) 
+                && !string.IsNullOrEmpty(G) 
+                && !string.IsNullOrEmpty(AliceText)
+                && !string.IsNullOrEmpty(BobText))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        #endregion
 
         #endregion
 
@@ -164,7 +324,7 @@ namespace InformationSecurity.ViewModels
                     break;
                 default:
                     throw new ArgumentException("Unknown Encryption alg");
-            
+
             }
         }
 
@@ -178,7 +338,7 @@ namespace InformationSecurity.ViewModels
             if (!string.IsNullOrEmpty(TextToEncryption) &&
                !string.IsNullOrEmpty(EncryptionAlg) &&
                !string.IsNullOrEmpty(EncryptionKey) &&
-               !HasErrors)
+               !HasErrorsByProperty(nameof(EncryptionKey)))
             {
                 return true;
             }
@@ -399,6 +559,67 @@ namespace InformationSecurity.ViewModels
 
         #endregion
 
+        #region KeyExchangeCommand
+
+        /// <summary>
+        /// KeyExchangeCommand field
+        /// </summary>
+        public ICommand KeyExchangeCommand { get; set; }
+
+        /// <summary>
+        /// KeyExchangeCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        private void OnKeyExchangeCommandExecuted(object p)
+        {
+            AliceText += $"Алиса и Боб договорились: p = {P}; g = {G}\n";
+            BobText += $"Алиса и Боб договорились: p = {P}; g = {G}\n";
+
+            Random rnd = new();
+            var a = (double)rnd.Next(2, int.Parse(P));
+            var b = (double)rnd.Next(2, int.Parse(P));
+
+            AliceText += $"Алиса случайным образом выбрала: а = {a}\n";
+            BobText += $"Боб случайным образом выбрал: b = {b}\n";
+
+            var A = (Math.Pow(double.Parse(G), a) % double.Parse(P));
+            var B = (Math.Pow(double.Parse(G), b) % double.Parse(P));
+
+            AliceText += $"Алиса вычислила: А = g^(a) mod p = {A}\n";
+            BobText += $"Боб получил от Алисы: А = {A}\n";
+
+            BobText += $"Боб вычислил: B = g^(b) mod p = {B}\n";
+            AliceText += $"Алиса получила от Боба: B = {B}\n";
+
+            var kAlice = (Math.Pow(B, a) % double.Parse(P));
+            var kBob = (Math.Pow(A, b) % double.Parse(P));
+
+            AliceText += $"Алиса вычислила: K = B^a mod p = {kAlice}\n";
+            BobText += $"Боб вычислил: K = A^b mod p = {kBob}\n";
+        }
+
+        /// <summary>
+        /// Can KeyExchangeCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private bool CanKeyExchangeCommandExecute(object p)
+        {
+            if (!string.IsNullOrEmpty(P) 
+                && !string.IsNullOrEmpty(G)
+                && !HasErrorsByProperty(nameof(P))
+                && !HasErrorsByProperty(nameof(G)))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
         #endregion
 
         /// <summary>
@@ -428,6 +649,10 @@ namespace InformationSecurity.ViewModels
 
             OpenVigenerTableCommand = new RelayCommand(OnOpenVigenerTableCommandExecuted, 
                                                        CanOpenVigenerTableCommandExecute);
+
+            KeyExchangeCommand = new RelayCommand(OnKeyExchangeCommandExecuted, CanKeyExchangeCommandExecute);
+
+            RefreshCommand = new RelayCommand(OnRefreshCommandExecuted, CanRefreshCommandExecute);
 
             #endregion
         }

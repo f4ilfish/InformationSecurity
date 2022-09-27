@@ -85,6 +85,11 @@ namespace InformationSecurity.ViewModels
         public bool HasErrors => _propertyErrors.Any();
 
         /// <summary>
+        /// HasErrorsByProperty method
+        /// </summary>
+        public bool HasErrorsByProperty(string propertyName) => _propertyErrors.ContainsKey(propertyName);
+
+        /// <summary>
         /// ErrorsChanged event
         /// </summary>
         public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
