@@ -16,7 +16,7 @@ namespace InformationSecurity.ViewModels
     {
         #region Шифрование
 
-        #region Текст для шифрования
+        #region Text to encryption
 
         /// <summary>
         /// Text to encryption field
@@ -30,7 +30,7 @@ namespace InformationSecurity.ViewModels
 
         #endregion
 
-        #region Текст для расшифрования
+        #region Text to dencryption
 
         /// <summary>
         /// Text to dencryption field
@@ -44,7 +44,7 @@ namespace InformationSecurity.ViewModels
 
         #endregion
 
-        #region Ключ шифрования / расшифрования
+        #region Key to encryption
 
         /// <summary>
         /// Key to encryption field
@@ -69,22 +69,22 @@ namespace InformationSecurity.ViewModels
 
         #endregion
 
-        #region Алгоритм шифрования / расшифрования
+        #region Encryption algorithm
 
         /// <summary>
-        /// Encryption (decryption) alg field
+        /// EncryptionAlgorithm field
         /// </summary>
-        private string _encryptionAlg;
+        private string _encryptionAlgorithm;
 
         /// <summary>
-        /// Encryption (decryption) alg property
+        /// EncryptionAlgorithm property
         /// </summary>
-        public string EncryptionAlg 
+        public string EncryptionAlgorithm 
         { 
-            get => _encryptionAlg;
+            get => _encryptionAlgorithm;
             set 
             {
-                Set(ref _encryptionAlg, value);
+                Set(ref _encryptionAlgorithm, value);
 
                 ClearErrors(nameof(EncryptionKey));
 
@@ -102,7 +102,7 @@ namespace InformationSecurity.ViewModels
         /// </summary>
         public void ValidateKey()
         {
-            if (EncryptionAlg == "Метод Цезаря" &&
+            if (EncryptionAlgorithm == "Метод Цезаря" &&
                 !string.IsNullOrEmpty(EncryptionKey) &&
                 !int.TryParse(EncryptionKey, out _))
             {
@@ -116,41 +116,32 @@ namespace InformationSecurity.ViewModels
 
         #region Обмен ключами
 
-        #region p
+        #region ModValue
 
         /// <summary>
-        /// g field
+        /// ModValue field
         /// </summary>
-        private string _p = string.Empty;
+        private string _modValue = string.Empty;
 
         /// <summary>
-        /// P property
+        /// ModValue property
         /// </summary>
-        public string P
+        public string ModValue
         {
-            get => _p;
+            get => _modValue;
             set
             {
-                Set(ref _p, value);
+                Set(ref _modValue, value);
 
-                ClearErrors(nameof(P));
+                ClearErrors(nameof(ModValue));
 
-                if (!string.IsNullOrEmpty(P) &&
-                    !int.TryParse(P, out _))
+                if(int.TryParse(ModValue, out var n))
                 {
-                    AddError(nameof(P), "P должен быть целочисленным");
-                }
-                
-                if(int.TryParse(P, out var n))
-                {
-                    if (!(n > 1)) AddError(nameof(P), "P должен быть больше 1");
-
+                    if (!(n > 1)) AddError(nameof(ModValue), "Должно быть простым числом");
+                    
                     for (int i = 2; i < n; i++)
                     {
-                        if (n % i == 0)
-                        {
-                            AddError(nameof(P), "P не является простым числом");
-                        }
+                        if (n % i == 0) AddError(nameof(ModValue), "Должно быть простым числом");
                     }
                 }
             }
@@ -158,41 +149,32 @@ namespace InformationSecurity.ViewModels
 
         #endregion
 
-        #region g
+        #region PowBaseValue
 
         /// <summary>
-        /// g field
+        /// PowBaseValue field
         /// </summary>
-        private string _g = string.Empty;
+        private string _powBaseValue = string.Empty;
 
         /// <summary>
-        /// P property
+        /// PowBaseValue property
         /// </summary>
-        public string G
+        public string PowBaseValue
         {
-            get => _g;
+            get => _powBaseValue;
             set
             {
-                Set(ref _g, value);
+                Set(ref _powBaseValue, value);
 
-                ClearErrors(nameof(G));
+                ClearErrors(nameof(PowBaseValue));
 
-                if (!string.IsNullOrEmpty(G) 
-                    && !int.TryParse(G, out _))
+                if (int.TryParse(PowBaseValue, out var n))
                 {
-                    AddError(nameof(G), "G должен быть целочисленным");
-                }
-
-                if (int.TryParse(G, out var n))
-                {
-                    if (!(n > 1) || (n >= 10)) AddError(nameof(G), "G должен быть в диапазоне 1...9");
+                    if (!(n > 1) || n > 9) AddError(nameof(PowBaseValue), "Основание должно быть простым числом от 2 до 9");
 
                     for (int i = 2; i < n; i++)
                     {
-                        if (n % i == 0)
-                        {
-                            AddError(nameof(G), "G не является простым числом");
-                        }
+                        if (n % i == 0) AddError(nameof(PowBaseValue), "Основание должно быть простым числом от 2 до 9");
                     }
                 }
             }
@@ -200,7 +182,7 @@ namespace InformationSecurity.ViewModels
 
         #endregion
 
-        #region Текст Алисы
+        #region Alice's text
 
         /// <summary>
         /// Alice's text field
@@ -214,7 +196,7 @@ namespace InformationSecurity.ViewModels
 
         #endregion
 
-        #region Текст Боба
+        #region Bob's text
 
         /// <summary>
         /// Bob's text field
@@ -228,47 +210,6 @@ namespace InformationSecurity.ViewModels
 
         #endregion
 
-        #region RefreshCommand
-
-        /// <summary>
-        /// RefreshCommand field
-        /// </summary>
-        public ICommand RefreshCommand { get; set; }
-
-        /// <summary>
-        /// RefreshCommand execute method
-        /// </summary>
-        /// <param name="p"></param>
-        private void OnRefreshCommandExecuted(object p)
-        {
-            P = string.Empty;
-            G = string.Empty;
-            AliceText = string.Empty;
-            BobText = string.Empty;
-        }
-
-        /// <summary>
-        /// Can RefreshCommand execute method
-        /// </summary>
-        /// <param name="p"></param>
-        /// <returns></returns>
-        private bool CanRefreshCommandExecute(object p)
-        {
-            if (!string.IsNullOrEmpty(P) 
-                && !string.IsNullOrEmpty(G) 
-                && !string.IsNullOrEmpty(AliceText)
-                && !string.IsNullOrEmpty(BobText))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        #endregion
-
         #endregion
 
         #region Команды
@@ -276,25 +217,25 @@ namespace InformationSecurity.ViewModels
         #region SelectEncryptionAlgCommand
 
         /// <summary>
-        /// SelectEncryptionAlgCommand field
+        /// SelectEncryptionAlgorithmCommand field
         /// </summary>
-        public ICommand SelectEncryptionAlgCommand { get; set; }
+        public ICommand SelectEncryptionAlgorithmCommand { get; set; }
 
         /// <summary>
-        /// SelectEncryptionAlgCommand execute method
+        /// SelectEncryptionAlgorithmCommand execute method
         /// </summary>
         /// <param name="p"></param>
-        private void OnSelectEncryptionAlgCommandExecuted(object p)
+        private void OnSelectEncryptionAlgorithmCommandExecuted(object p)
         {
-            EncryptionAlg = (string)p;
+            EncryptionAlgorithm = (string)p;
         }
 
         /// <summary>
-        /// Can SelectEncryptionAlgCommand execute method
+        /// CanSelectEncryptionAlgorithmCommand execute method
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
-        private bool CanSelectEncryptionAlgCommandExecute(object p) => true;
+        private bool CanSelectEncryptionAlgorithmCommandExecute(object p) => true;
 
         #endregion
 
@@ -311,7 +252,7 @@ namespace InformationSecurity.ViewModels
         /// <param name="p"></param>
         private void OnEncryptCommandExecuted(object p)
         {
-            switch (EncryptionAlg)
+            switch (EncryptionAlgorithm)
             {
                 case "Метод Цезаря":
                     TextToDecryption = StringEncryptor
@@ -335,17 +276,10 @@ namespace InformationSecurity.ViewModels
         /// <returns></returns>
         private bool CanEncryptCommandExecute(object p)
         {
-            if (!string.IsNullOrEmpty(TextToEncryption) &&
-               !string.IsNullOrEmpty(EncryptionAlg) &&
-               !string.IsNullOrEmpty(EncryptionKey) &&
-               !HasErrorsByProperty(nameof(EncryptionKey)))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return !string.IsNullOrEmpty(TextToEncryption) &&
+                   !string.IsNullOrEmpty(EncryptionAlgorithm) &&
+                   !string.IsNullOrEmpty(EncryptionKey) &&
+                   !HasErrorsByProperty(nameof(EncryptionKey));
         }
 
         #endregion
@@ -363,7 +297,7 @@ namespace InformationSecurity.ViewModels
         /// <param name="p"></param>
         private void OnDecryptCommandExecuted(object p)
         {
-            switch (EncryptionAlg)
+            switch (EncryptionAlgorithm)
             {
                 case "Метод Цезаря":
                     TextToEncryption = StringEncryptor
@@ -386,35 +320,28 @@ namespace InformationSecurity.ViewModels
         /// <returns></returns>
         private bool CanDecryptCommandExecute(object p)
         {
-            if (!string.IsNullOrEmpty(TextToDecryption) &&
-               !string.IsNullOrEmpty(EncryptionAlg) &&
-               !string.IsNullOrEmpty(EncryptionKey) &&
-               !HasErrors)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return !string.IsNullOrEmpty(TextToDecryption) &&
+                   !string.IsNullOrEmpty(EncryptionAlgorithm) &&
+                   !string.IsNullOrEmpty(EncryptionKey) &&
+                   !HasErrorsByProperty(nameof(EncryptionKey));
         }
 
         #endregion
 
-        #region DownloadCommand
+        #region DownloadTextToEncryptCommand
 
         /// <summary>
-        /// DownloadCommand field
+        /// DownloadTextToEncryptCommand field
         /// </summary>
-        public ICommand DownloadCommand { get; }
+        public ICommand DownloadTextToEncryptCommand { get; }
 
         /// <summary>
-        /// DownloadCommand execute method
+        /// OnDownloadTextToEncryptCommand execute method
         /// </summary>
         /// <param name="p"></param>
-        private void OnDownloadCommandExecuted(object p)
+        private void OnDownloadTextToEncryptCommandExecuted(object p)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            OpenFileDialog openFileDialog = new()
             {
                 Title = "Загрузить текстовый файл",
                 Filter = "Текстовый файл (*.txt)|*.txt"
@@ -422,17 +349,12 @@ namespace InformationSecurity.ViewModels
 
             bool? response = openFileDialog.ShowDialog();
 
-            if (response == false)
-            {
-                return;
-            }
+            if (response == false) return;
 
             try
             {
-                using (StreamReader streamReader = new StreamReader(openFileDialog.FileName))
-                {
-                    TextToEncryption = streamReader.ReadToEnd();
-                }
+                using StreamReader streamReader = new(openFileDialog.FileName);
+                TextToEncryption = streamReader.ReadToEnd();
             }
             catch (Exception ex)
             {
@@ -445,24 +367,24 @@ namespace InformationSecurity.ViewModels
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
-        private bool CanDownloadCommandExecute(object p) => true;
+        private bool CanDownloadTextToEncryptCommandExecute(object p) => true;
 
         #endregion
 
-        #region SaveCommand
+        #region SaveEncryptedTextCommand
 
         /// <summary>
-        /// SaveCommand field
+        /// SaveEncryptedTextCommand field
         /// </summary>
-        public ICommand SaveCommand { get; }
+        public ICommand SaveEncryptedTextCommand { get; }
 
         /// <summary>
-        /// SaveCommand execute method
+        /// OnSaveEncryptedTextCommand execute method
         /// </summary>
         /// <param name="p"></param>
-        private void OnSaveCommandExecuted(object p)
+        private void OnSaveEncryptedTextCommandExecuted(object p)
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog
+            SaveFileDialog saveFileDialog = new()
             {
                 Title = "Сохранить результат",
                 Filter = "Текстовый файл (*.txt)|*.txt",
@@ -471,17 +393,12 @@ namespace InformationSecurity.ViewModels
 
             bool? response = saveFileDialog.ShowDialog();
 
-            if (response == false)
-            {
-                return;
-            }
+            if (response == false) return;
 
             try
             {
-                using (StreamWriter streamWriter = new StreamWriter(saveFileDialog.FileName))
-                {
-                    streamWriter.Write(TextToDecryption);
-                }
+                using StreamWriter streamWriter = new(saveFileDialog.FileName);
+                streamWriter.Write(TextToDecryption);
             }
             catch (Exception ex)
             {
@@ -490,21 +407,11 @@ namespace InformationSecurity.ViewModels
         }
 
         /// <summary>
-        /// Can SaveCommand execute method
+        /// CanSaveEncryptedTextCommand execute method
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
-        private bool CanSaveCommandExecute(object p)
-        {
-            if (!string.IsNullOrEmpty(TextToDecryption))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        private bool CanSaveEncryptedTextCommandExecute(object p) => !string.IsNullOrEmpty(TextToDecryption);
 
         #endregion
 
@@ -546,7 +453,7 @@ namespace InformationSecurity.ViewModels
         /// <param name="p"></param>
         private void OnOpenVigenerTableCommandExecuted(object p)
         {
-            VigenerTableWindow vigenerTableWindow = new VigenerTableWindow();
+            VigenerTableWindow vigenerTableWindow = new();
             vigenerTableWindow.Show();
         }
 
@@ -572,18 +479,18 @@ namespace InformationSecurity.ViewModels
         /// <param name="p"></param>
         private void OnKeyExchangeCommandExecuted(object p)
         {
-            AliceText += $"Алиса и Боб договорились: p = {P}; g = {G}\n";
-            BobText += $"Алиса и Боб договорились: p = {P}; g = {G}\n";
+            AliceText += $"Алиса и Боб договорились: p = {ModValue}; g = {PowBaseValue}\n";
+            BobText += $"Алиса и Боб договорились: p = {ModValue}; g = {PowBaseValue}\n";
 
             Random rnd = new();
-            var a = (double)rnd.Next(2, int.Parse(P));
-            var b = (double)rnd.Next(2, int.Parse(P));
+            var a = (double)rnd.Next(2, int.Parse(ModValue));
+            var b = (double)rnd.Next(2, int.Parse(ModValue));
 
             AliceText += $"Алиса случайным образом выбрала: а = {a}\n";
             BobText += $"Боб случайным образом выбрал: b = {b}\n";
 
-            var A = (Math.Pow(double.Parse(G), a) % double.Parse(P));
-            var B = (Math.Pow(double.Parse(G), b) % double.Parse(P));
+            var A = (Math.Pow(double.Parse(PowBaseValue), a) % double.Parse(ModValue));
+            var B = (Math.Pow(double.Parse(PowBaseValue), b) % double.Parse(ModValue));
 
             AliceText += $"Алиса вычислила: А = g^(a) mod p = {A}\n";
             BobText += $"Боб получил от Алисы: А = {A}\n";
@@ -591,8 +498,8 @@ namespace InformationSecurity.ViewModels
             BobText += $"Боб вычислил: B = g^(b) mod p = {B}\n";
             AliceText += $"Алиса получила от Боба: B = {B}\n";
 
-            var kAlice = (Math.Pow(B, a) % double.Parse(P));
-            var kBob = (Math.Pow(A, b) % double.Parse(P));
+            var kAlice = (Math.Pow(B, a) % double.Parse(ModValue));
+            var kBob = (Math.Pow(A, b) % double.Parse(ModValue));
 
             AliceText += $"Алиса вычислила: K = B^a mod p = {kAlice}\n";
             BobText += $"Боб вычислил: K = A^b mod p = {kBob}\n";
@@ -605,18 +512,39 @@ namespace InformationSecurity.ViewModels
         /// <returns></returns>
         private bool CanKeyExchangeCommandExecute(object p)
         {
-            if (!string.IsNullOrEmpty(P) 
-                && !string.IsNullOrEmpty(G)
-                && !HasErrorsByProperty(nameof(P))
-                && !HasErrorsByProperty(nameof(G)))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return !string.IsNullOrEmpty(ModValue) &&
+                   !string.IsNullOrEmpty(PowBaseValue) &&
+                   !HasErrorsByProperty(nameof(ModValue)) &&
+                   !HasErrorsByProperty(nameof(PowBaseValue));
         }
+
+        #endregion
+
+        #region ResetKeyExchangeCommand
+
+        /// <summary>
+        /// ResetKeyExchangeCommand field
+        /// </summary>
+        public ICommand ResetKeyExchangeCommand { get; set; }
+
+        /// <summary>
+        /// RefreshCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        private void OnResetKeyExchangeCommandExecuted(object p)
+        {
+            ModValue = string.Empty;
+            PowBaseValue = string.Empty;
+            AliceText = string.Empty;
+            BobText = string.Empty;
+        }
+
+        /// <summary>
+        /// CanRefreshCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private bool CanResetKeyExchangeCommandExecute(object p) => true;
 
         #endregion
 
@@ -627,13 +555,11 @@ namespace InformationSecurity.ViewModels
         /// </summary>
         public MainWindowViewModel()
         {
-            #region Инициализация команд
-            
             CloseApplicationCommand = new RelayCommand(OnCloseApplicationCommandExecuted,
                                                        CanCloseApplicationCommandExecute);
 
-            SelectEncryptionAlgCommand = new RelayCommand(OnSelectEncryptionAlgCommandExecuted,
-                                                            CanSelectEncryptionAlgCommandExecute);
+            SelectEncryptionAlgorithmCommand = new RelayCommand(OnSelectEncryptionAlgorithmCommandExecuted,
+                                                            CanSelectEncryptionAlgorithmCommandExecute);
 
             EncryptCommand = new RelayCommand(OnEncryptCommandExecuted, 
                                               CanEncryptCommandExecute);
@@ -641,20 +567,20 @@ namespace InformationSecurity.ViewModels
             DecryptCommand = new RelayCommand(OnDecryptCommandExecuted, 
                                               CanDecryptCommandExecute);
 
-            DownloadCommand = new RelayCommand(OnDownloadCommandExecuted, 
-                                               CanDownloadCommandExecute);
+            DownloadTextToEncryptCommand = new RelayCommand(OnDownloadTextToEncryptCommandExecuted, 
+                                               CanDownloadTextToEncryptCommandExecute);
 
-            SaveCommand = new RelayCommand(OnSaveCommandExecuted, 
-                                           CanSaveCommandExecute);
+            SaveEncryptedTextCommand = new RelayCommand(OnSaveEncryptedTextCommandExecuted, 
+                                           CanSaveEncryptedTextCommandExecute);
 
             OpenVigenerTableCommand = new RelayCommand(OnOpenVigenerTableCommandExecuted, 
                                                        CanOpenVigenerTableCommandExecute);
 
-            KeyExchangeCommand = new RelayCommand(OnKeyExchangeCommandExecuted, CanKeyExchangeCommandExecute);
+            KeyExchangeCommand = new RelayCommand(OnKeyExchangeCommandExecuted, 
+                                                  CanKeyExchangeCommandExecute);
 
-            RefreshCommand = new RelayCommand(OnRefreshCommandExecuted, CanRefreshCommandExecute);
-
-            #endregion
+            ResetKeyExchangeCommand = new RelayCommand(OnResetKeyExchangeCommandExecuted, 
+                                                       CanResetKeyExchangeCommandExecute);
         }
     }
 }

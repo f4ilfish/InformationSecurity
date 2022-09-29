@@ -27,8 +27,8 @@
         
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Файл">
-                <MenuItem Header="Открыть" Command="{Binding Path=DownloadCommand}"/>
-                <MenuItem Header="Сохранить" Command="{Binding Path=SaveCommand}"/>
+                <MenuItem Header="Открыть" Command="{Binding Path=DownloadTextToEncryptCommand}"/>
+                <MenuItem Header="Сохранить" Command="{Binding Path=SaveEncryptedTextCommand}"/>
                 <MenuItem Header="Выход" Command="{Binding Path=CloseApplicationCommand}"/>
             </MenuItem>
             <MenuItem Header="Помощь">
@@ -41,103 +41,105 @@
             <TabItem>
                 <!--Вкладка шифрования-->
                 <TabItem.Header>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <materialDesign:PackIcon Kind="EncryptionSecure" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Шифрование" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="EncryptionSecure" VerticalAlignment="Center" Width="25" Height="25"/>
+                        <TextBlock Text="Шифрование" Margin="5, 0, 0, 0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
-
                 <Grid ShowGridLines="False">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="0.3*"></RowDefinition>
+                        <RowDefinition Height="100"></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition></ColumnDefinition>
-                        <ColumnDefinition Width="0.15*"></ColumnDefinition>
+                        <ColumnDefinition Width="50"></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <DockPanel Grid.Column="1" Grid.Row="1" VerticalAlignment="Center">
-                        <Button Command="{Binding Path=EncryptCommand}" DockPanel.Dock="Top" Height="100" Margin="0, 10, 0, 10">
-                            <materialDesign:PackIcon Kind="ArrowRight" HorizontalAlignment="Center" VerticalAlignment="Center" Width="16"/>
+                    <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical" VerticalAlignment="Center">
+                        <Button Command="{Binding Path=EncryptCommand}" Height="100">
+                            <Button.Content>
+                                <materialDesign:PackIcon Kind="ArrowRight" HorizontalAlignment="Center" Height="25" Width="25"/>
+                            </Button.Content>
                         </Button>
-                        <Button Command="{Binding Path=DecryptCommand}" DockPanel.Dock="Bottom" Height="100" Margin="0, 10, 0, 10">
-                            <materialDesign:PackIcon Kind="ArrowLeft" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Button Command="{Binding Path=DecryptCommand}" Height="100" Margin="0, 50, 0, 0">
+                            <Button.Content>
+                                <materialDesign:PackIcon Kind="ArrowLeft" HorizontalAlignment="Center" Height="25" Width="25"/>
+                            </Button.Content>
                         </Button>
-                    </DockPanel>
-                    <TextBox Text="{Binding Path=TextToEncryption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="0" Grid.Row="1" Margin="20" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" Language="ru-ru" AcceptsReturn="True"/>
-                    <TextBox Text="{Binding Path=TextToDecryption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2" Grid.Row="1" Margin="20" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" Language="ru-ru" AcceptsReturn="True"/>
-                    <StackPanel Grid.Column="0" Grid.Row="0" Margin="2" VerticalAlignment="Top">
-                        <RadioButton GroupName="EncryptionMethods" Content="Метод Цезаря" Name="CeaserAlg" Command="{Binding Path=SelectEncryptionAlgCommand}" CommandParameter="{Binding ElementName=CeaserAlg, Path=Content}" Margin="15, 5, 0, 5"/>
-                        <RadioButton GroupName="EncryptionMethods" Content="Метод Виженера" Name="VigenerAlg" Command="{Binding Path=SelectEncryptionAlgCommand}" CommandParameter="{Binding ElementName=VigenerAlg, Path=Content}" Margin="15, 0, 0, 0"/>
-                        <StackPanel Margin="3" VerticalAlignment="Bottom" Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="Key" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="15, 0, 0, 0" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                            <TextBox Text="{Binding Path=EncryptionKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="300" Margin="3" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBox Text="{Binding Path=TextToEncryption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="0" Grid.Row="1" Margin="15" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
+                    <TextBox Text="{Binding Path=TextToDecryption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2" Grid.Row="1" Margin="15" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
+                    <StackPanel Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">
+                        <RadioButton GroupName="EncryptionMethods" Content="Метод Цезаря" Name="CeaserAlg" Command="{Binding Path=SelectEncryptionAlgorithmCommand}" CommandParameter="{Binding ElementName=CeaserAlg, Path=Content}" Margin="15, 5, 0, 5"/>
+                        <RadioButton GroupName="EncryptionMethods" Content="Метод Виженера" Name="VigenerAlg" Command="{Binding Path=SelectEncryptionAlgorithmCommand}" CommandParameter="{Binding ElementName=VigenerAlg, Path=Content}" Margin="15, 0, 0, 0"/>
+                        <StackPanel Margin="15, 0, 0, 0" VerticalAlignment="Bottom" Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Key" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryHueMidBrush}" Height="20" Width="20"/>
+                            <TextBox Text="{Binding Path=EncryptionKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="315" Margin="5, 0, 0, 0" VerticalAlignment="Center"/>
                         </StackPanel>
                     </StackPanel>
                 </Grid>
             </TabItem>
-
             <!--Вкладка обмена ключами-->
             <TabItem>
                 <TabItem.Header>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <materialDesign:PackIcon Kind="KeyChain" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Обмен ключами" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="KeyChain" VerticalAlignment="Center" Height="25" Width="25"/>
+                        <TextBlock Text="Обмен ключами" VerticalAlignment="Center" Margin="5, 0, 0, 0"/>
                     </StackPanel>
                 </TabItem.Header>
-
                 <Grid ShowGridLines="False">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="0.35*"></RowDefinition>
+                        <RowDefinition Height="100"></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition></ColumnDefinition>
-                        <ColumnDefinition Width="0.1*"></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <DockPanel Grid.Column="1" Grid.Row="1" VerticalAlignment="Center">
-                        
-                    </DockPanel>
-                    <TextBox Text="{Binding Path=AliceText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="0" Grid.Row="1" Margin="20" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" Language="ru-ru" AcceptsReturn="True"/>
-                    <TextBox Text="{Binding Path=BobText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2" Grid.Row="1" Margin="20" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" Language="ru-ru" AcceptsReturn="True"/>
-                    <StackPanel>
-                        <StackPanel Grid.Column="0" Grid.Row="0" Margin="5" VerticalAlignment="Center" Orientation="Horizontal">
-                            <StackPanel Margin="3" VerticalAlignment="Bottom" Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="AlphaGBox" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="15, 0, 0, 0" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                                <TextBox Text="{Binding Path=G, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" Margin="3" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding Path=AliceText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="0" Grid.Row="1" Margin="15" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" IsReadOnly="True"/>
+                    <TextBox Text="{Binding Path=BobText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.Row="1" Margin="15" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" IsReadOnly="True"/>
+                    <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="15, 0, 0, 0">
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="AlphaGBox" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryHueMidBrush}" Height="20" Width="20"/>
+                                <TextBox Text="{Binding Path=PowBaseValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" Margin="5, 0, 0, 0" VerticalAlignment="Center"/>
                             </StackPanel>
-                            <StackPanel Margin="3" VerticalAlignment="Bottom" Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="AlphaPBox" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="15, 0, 0, 0" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                                <TextBox Text="{Binding Path=P, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" Margin="3" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </StackPanel>
-                        <StackPanel Grid.Column="0" Grid.Row="0" Margin="5" VerticalAlignment="Center" Orientation="Horizontal">
-                            <Button Margin="35, 15, 0, 5" Command="{Binding Path=KeyExchangeCommand}" Cursor="Hand">
+                            <Button Command="{Binding Path=KeyExchangeCommand}" Margin="25, 10, 0, 0" Width="100">
                                 <Button.Content>
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon Kind="SwapHorizontalBold" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Обмен" Margin="5" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Обмен" Margin="5, 0, 0, 0" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Button.Content>
                             </Button>
-                            <Button Margin="45, 15, 0, 5" Command="{Binding Path=RefreshCommand}">
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Margin="25, 0, 0, 0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="AlphaPBox" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryHueMidBrush}" Height="20" Width="20"/>
+                                <TextBox Text="{Binding Path=ModValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" Margin="5, 0, 0, 0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <Button Command="{Binding Path=ResetKeyExchangeCommand}" Margin="25, 10, 0, 0" Width="100">
                                 <Button.Content>
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon Kind="Delete" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Сброс" Margin="5" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Сброс" Margin="5, 0, 0, 0" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Button.Content>
                             </Button>
                         </StackPanel>
                     </StackPanel>
                 </Grid>
-
             </TabItem>
-
-            
-
+            <!--Вкладка RSA-->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Ninja" VerticalAlignment="Center" Height="25" Width="25"/>
+                        <TextBlock Text="RSA" VerticalAlignment="Center" Margin="5, 0, 0, 0"/>
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
         </TabControl>
     </DockPanel>
 </Window>

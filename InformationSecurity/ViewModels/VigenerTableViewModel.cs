@@ -27,7 +27,7 @@ namespace InformationSecurity.ViewModels
         /// <param name="p"></param>
         private void OnSaveVigenerTableExecuted(object p)
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog
+            SaveFileDialog saveFileDialog = new()
             {
                 Title = "Сохранить Таблицу Виженера",
                 Filter = "Текстовый файл (*.txt)|*.txt",
@@ -36,20 +36,15 @@ namespace InformationSecurity.ViewModels
 
             bool? response = saveFileDialog.ShowDialog();
 
-            if (response == false)
-            {
-                return;
-            }
+            if (response == false) return;
 
             try
             {
-                using (StreamWriter streamWriter = new StreamWriter(saveFileDialog.FileName))
+                using StreamWriter streamWriter = new(saveFileDialog.FileName);
+                foreach (var row in VigenerTable)
                 {
-                    foreach (var row in VigenerTable)
-                    {
-                        streamWriter.Write(row);
-                        streamWriter.Write('\n');
-                    }
+                    streamWriter.Write(row);
+                    streamWriter.Write('\n');
                 }
             }
             catch (Exception ex)
@@ -59,33 +54,23 @@ namespace InformationSecurity.ViewModels
         }
 
         /// <summary>
-        /// Can SaveVigenerTable execute method
+        /// CanSaveVigenerTable execute method
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
-        private bool CanSaveVigenerTableCommandExecute(object p)
-        {
-            if (VigenerTable.Count > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        private bool CanSaveVigenerTableCommandExecute(object p) => true;
 
         #endregion
 
-        #region Таблица Виженера
+        #region VigenerTable
 
         /// <summary>
-        /// Vigener Table field
+        /// VigenerTable field
         /// </summary>
         private List<string> _vigenerTable;
 
         /// <summary>
-        /// Vigener Table property
+        /// VigenerTable property
         /// </summary>
         public List<string> VigenerTable { get => _vigenerTable; set => Set(ref _vigenerTable, value); }
 
