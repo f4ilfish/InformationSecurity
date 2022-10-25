@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InformationSecurity.Infrastructure.Encryptors
 {
+    /// <summary>
+    /// RSAEncryptor class
+    /// </summary>
     internal class RSAEncryptor
     {
         /// <summary>
-        /// 
+        /// Prime number validation
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">input value</param>
         /// <returns></returns>
         public static bool IsPrimeNumber(int value)
         {
@@ -25,12 +25,12 @@ namespace InformationSecurity.Infrastructure.Encryptors
 
             return true;
         }
-        
+
         /// <summary>
-        /// 
+        /// Get common for both keys N value
         /// </summary>
-        /// <param name="pValue"></param>
-        /// <param name="qValue"></param>
+        /// <param name="pValue">general p value</param>
+        /// <param name="qValue">general q value</param>
         /// <returns></returns>
         public static int GetNValue(int pValue, int qValue)
         {
@@ -38,10 +38,10 @@ namespace InformationSecurity.Infrastructure.Encryptors
         }
 
         /// <summary>
-        /// 
+        /// Get general K value
         /// </summary>
-        /// <param name="pValue"></param>
-        /// <param name="qValue"></param>
+        /// <param name="pValue">general p value</param>
+        /// <param name="qValue">general q value</param>
         /// <returns></returns>
         public static int GetKValue(int pValue, int qValue)
         {
@@ -49,10 +49,10 @@ namespace InformationSecurity.Infrastructure.Encryptors
         }
 
         /// <summary>
-        /// 
+        /// Get secret key's D value
         /// </summary>
-        /// <param name="nValue"></param>
-        /// <param name="kValue"></param>
+        /// <param name="nValue">common N value</param>
+        /// <param name="kValue">general K value</param>
         /// <returns></returns>
         public static int GetDValue(int nValue, int kValue)
         {
@@ -69,9 +69,9 @@ namespace InformationSecurity.Infrastructure.Encryptors
         }
 
         /// <summary>
-        /// 
+        /// Get list of prime numbers 
         /// </summary>
-        /// <param name="upperBound"></param>
+        /// <param name="upperBound">upper bound value</param>
         /// <returns></returns>
         private static List<int> GetPrimeNumberList(int upperBound)
         {
@@ -86,10 +86,10 @@ namespace InformationSecurity.Infrastructure.Encryptors
         }
 
         /// <summary>
-        /// 
+        /// Get greatest common devisor
         /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
+        /// <param name="a">input value</param>
+        /// <param name="b">input value</param>
         /// <returns></returns>
         public static int GetGreatestCommonDevisor(int a, int b)
         {
@@ -103,10 +103,10 @@ namespace InformationSecurity.Infrastructure.Encryptors
         }
 
         /// <summary>
-        /// 
+        /// Get open key's E value
         /// </summary>
-        /// <param name="dValue"></param>
-        /// <param name="kValue"></param>
+        /// <param name="dValue">secret key's D value</param>
+        /// <param name="kValue">general K value</param>
         /// <returns></returns>
         public static int GetEValue(int dValue, int kValue)
         {
@@ -121,11 +121,11 @@ namespace InformationSecurity.Infrastructure.Encryptors
         }
 
         /// <summary>
-        /// 
+        /// Encrypt text by RSA algorithm
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="eValue"></param>
-        /// <param name="nValue"></param>
+        /// <param name="text">text to encryption</param>
+        /// <param name="eValue">open key's E value</param>
+        /// <param name="nValue">common N value</param>
         /// <returns></returns>
         public static List<int> EncryptRSA(string text, int eValue, int nValue)
         {
@@ -141,11 +141,11 @@ namespace InformationSecurity.Infrastructure.Encryptors
         }
 
         /// <summary>
-        /// 
+        /// Decrypt list of numbers by RSA algorithm
         /// </summary>
-        /// <param name="encryptedTextAsNumbers"></param>
-        /// <param name="dValue"></param>
-        /// <param name="nValue"></param>
+        /// <param name="encryptedTextAsNumbers">list of numbers</param>
+        /// <param name="dValue">secret key's D value</param>
+        /// <param name="nValue">common N value</param>
         /// <returns></returns>
         public static string DecryptRSA(List<int> encryptedTextAsNumbers, long dValue, long nValue)
         {
