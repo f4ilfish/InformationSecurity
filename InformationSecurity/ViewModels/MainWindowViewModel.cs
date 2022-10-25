@@ -6,6 +6,8 @@ using Microsoft.Win32;
 using InformationSecurity.Infrastructure.Commands;
 using InformationSecurity.Infrastructure.Encryptors;
 using InformationSecurity.Views.Windows;
+using System.Collections.Generic;
+using System.Numerics;
 
 namespace InformationSecurity.ViewModels
 {
@@ -14,7 +16,7 @@ namespace InformationSecurity.ViewModels
     /// </summary>
     internal class MainWindowViewModel : ViewModelBase
     {
-        #region Шифрование
+        #region Шифрование методами Цезаря / Виженера
 
         #region Text to encryption
 
@@ -114,7 +116,7 @@ namespace InformationSecurity.ViewModels
 
         #endregion
 
-        #region Обмен ключами
+        #region Шифрование методом Диффи-Хелмана
 
         #region ModValue
 
@@ -209,6 +211,135 @@ namespace InformationSecurity.ViewModels
         public string BobText { get => _bobText; set => Set(ref _bobText, value); }
 
         #endregion
+
+        #endregion
+
+        #region RSA-шифрование
+
+        /// <summary>
+        /// General p value's field
+        /// </summary>
+        private int _pValue;
+
+        /// <summary>
+        /// General p values property
+        /// </summary>
+        public int PValue 
+        { 
+            get => _pValue; 
+            set
+            {
+                Set(ref _pValue, value);
+
+                ClearErrors(nameof(PValue));
+
+                if (!RSAEncryptor.IsPrimeNumber(PValue)) 
+                {
+                    AddError(nameof(PValue), "P должно быть простым числом");
+                } 
+            }
+        }
+
+        /// <summary>
+        /// General q value's field
+        /// </summary>
+        private int _qValue;
+
+        /// <summary>
+        /// General q value's property
+        /// </summary>
+        public int QValue
+        {
+            get => _qValue;
+            set
+            {
+                Set(ref _qValue, value);
+
+                ClearErrors(nameof(QValue));
+
+                if (!RSAEncryptor.IsPrimeNumber(QValue))
+                {
+                    AddError(nameof(QValue), "Q должно быть простым числом");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Open key's n value's field
+        /// </summary>
+        private int _nValue;
+
+        /// <summary>
+        /// Open key's n value's property
+        /// </summary>
+        public int NValue { get => _nValue; set => Set(ref _nValue, value); }
+
+        /// <summary>
+        /// Secret key's D value's field
+        /// </summary>
+        private int _dValue;
+
+        /// <summary>
+        /// Secret key's D value's property
+        /// </summary>
+        public int DValue { get => _dValue; set => Set(ref _dValue, value);}
+
+        /// <summary>
+        /// Open key's E value's field
+        /// </summary>
+        private int _eValue;
+
+        /// <summary>
+        /// Open key's E value's property
+        /// </summary>
+        public int EValue { get { return _eValue; } set { _eValue = value; } }
+
+        /// <summary>
+        /// RSA encryption text's field
+        /// </summary>
+        private string _textToRSAEncryption = string.Empty;
+
+        /// <summary>
+        /// RSA encryption text's property
+        /// </summary>
+        public string TextToRSAEncryption { get => _textToRSAEncryption; set => Set(ref _textToRSAEncryption, value); }
+
+        /// <summary>
+        /// RSA decryption text's field
+        /// </summary>
+        private string _textToRSADecryption = string.Empty;
+
+        /// <summary>
+        /// RSA decryption text's property
+        /// </summary>
+        public string TextToRSADecryption { get => _textToRSADecryption; set => Set(ref _textToRSADecryption, value); }
+
+        /// <summary>
+        /// Secret keys check
+        /// </summary>
+        /// <returns></returns>
+        public bool IsHasRSASecretKeys()
+        {
+            return DValue > 0 && NValue > 0;
+        }
+
+        /// <summary>
+        /// Open keys check
+        /// </summary>
+        /// <returns></returns>
+        public bool IsHasRSAOpenKeys()
+        {
+            return EValue > 0 && NValue > 0;
+        }
+
+        /// <summary>
+        /// General input check
+        /// </summary>
+        /// <returns></returns>
+        public bool IsInputPQ()
+        {
+            return PValue > 0 && QValue > 0;
+        }
 
         #endregion
 
@@ -354,7 +485,7 @@ namespace InformationSecurity.ViewModels
             try
             {
                 using StreamReader streamReader = new(openFileDialog.FileName);
-                TextToEncryption = streamReader.ReadToEnd();
+                TextToRSAEncryption = streamReader.ReadToEnd();
             }
             catch (Exception ex)
             {
@@ -398,7 +529,7 @@ namespace InformationSecurity.ViewModels
             try
             {
                 using StreamWriter streamWriter = new(saveFileDialog.FileName);
-                streamWriter.Write(TextToDecryption);
+                streamWriter.Write(TextToRSADecryption);
             }
             catch (Exception ex)
             {
@@ -411,7 +542,7 @@ namespace InformationSecurity.ViewModels
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
-        private bool CanSaveEncryptedTextCommandExecute(object p) => !string.IsNullOrEmpty(TextToDecryption);
+        private bool CanSaveEncryptedTextCommandExecute(object p) => !string.IsNullOrEmpty(TextToRSADecryption);
 
         #endregion
 
@@ -548,6 +679,360 @@ namespace InformationSecurity.ViewModels
 
         #endregion
 
+        #region EncryptRSACommand
+
+        /// <summary>
+        /// EncryptRSACommand field
+        /// </summary>
+        public ICommand EncryptRSACommand { get; set; }
+
+        /// <summary>
+        /// EncryptRSACommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        private void OnEncryptRSACommandExecuted(object p)
+        {
+            TextToRSADecryption = string.Empty;
+
+            var encryptedTextAsNumbers = RSAEncryptor.EncryptRSA(TextToRSAEncryption, EValue, NValue);
+         
+            TextToRSADecryption = string.Join(' ', encryptedTextAsNumbers);
+        }
+
+        /// <summary>
+        /// Is EncryptRSACommand can be executed
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private bool CanEncryptRSACommandExecute(object p)
+        {
+            return !string.IsNullOrEmpty(TextToRSAEncryption) &&
+                   !HasErrorsByProperty(nameof(PValue)) &&
+                   !HasErrorsByProperty(nameof(QValue)) &&
+                   IsHasRSASecretKeys() &&
+                   IsHasRSAOpenKeys();
+        }
+
+        #endregion
+
+        #region DecryptRSACommand
+
+        /// <summary>
+        /// DecryptRSACommand field
+        /// </summary>
+        public ICommand DecryptRSACommand { get; set; }
+
+        /// <summary>
+        /// DecryptRSACommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        private void OnDecryptRSACommandExecuted(object p)
+        {
+            TextToRSAEncryption = string.Empty;
+
+            var encryptedNumbersAsText = TextToRSADecryption.Split(' ');
+            var encryptedNumbersList = new List<int>();
+
+            foreach (var number in encryptedNumbersAsText)
+            {
+                encryptedNumbersList.Add(int.Parse(number));
+            }
+
+            TextToRSAEncryption = RSAEncryptor.DecryptRSA(encryptedNumbersList, DValue, NValue);
+        }
+
+        /// <summary>
+        /// Is DecryptRSACommand can be executed
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private bool CanDecryptRSACommandExecute(object p)
+        {
+            return !string.IsNullOrEmpty(TextToRSADecryption) &&
+                   !HasErrorsByProperty(nameof(PValue)) &&
+                   !HasErrorsByProperty(nameof(QValue)) &&
+                   IsHasRSASecretKeys() &&
+                   IsHasRSASecretKeys();
+        }
+
+        #endregion
+
+        #region CalculateRSAKeys
+
+        /// <summary>
+        /// CalculateRSAKeysCommand field
+        /// </summary>
+        public ICommand CalculateRSAKeysCommand { get; set; }
+
+        /// <summary>
+        /// CalculateRSAKeysCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        private void OnCalculateRSAKeysCommandExecuted(object p)
+        {
+            NValue = RSAEncryptor.GetNValue(PValue, QValue);
+            DValue = RSAEncryptor.GetDValue(NValue, QValue);
+            EValue = RSAEncryptor.GetEValue(DValue, RSAEncryptor.GetKValue(PValue, QValue));
+        }
+
+        /// <summary>
+        /// Is CalculateRSAKeysCommand can be executed
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private bool CanCalculateRSAKeysCommandExecute(object p) => IsInputPQ();
+
+        #endregion
+
+        #region DownloadOpenRSAKeyCommand
+
+        /// <summary>
+        /// DownloadOpenRSAKeyCommand field
+        /// </summary>
+        public ICommand DownloadOpenRSAKeyCommand { get; }
+
+        /// <summary>
+        /// OnDownloadOpenRSAKeyCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        private void OnDownloadOpenRSAKeyCommandExecuted(object p)
+        {
+            OpenFileDialog openFileDialog = new()
+            {
+                Title = "Загрузить файл c открытым ключом",
+                Filter = "Текстовый файл (*.txt)|*.txt"
+            };
+
+            bool? response = openFileDialog.ShowDialog();
+
+            if (response == false) return;
+
+            try
+            {
+                using StreamReader streamReader = new(openFileDialog.FileName);
+                var openKeyText = streamReader.ReadLine();
+
+                if (!string.IsNullOrEmpty(openKeyText))
+                {
+                    var openKeyArr = openKeyText.Split(' ');
+                    var eText = openKeyArr[0];
+                    var nText = openKeyArr[1];
+
+                    if (int.TryParse(nText, out int nValue) &&
+                        int.TryParse(eText, out int eValue))
+                    {
+                        EValue = eValue;
+
+                        if (nValue > DValue)
+                        {
+                            NValue = nValue;
+                        }
+                        else
+                        {
+                            MessageBox.Show("N меньше или равен D");
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Ключи должены быть целым числом");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Исходный файл пуст");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Is DownloadOpenRSAKeyCommand can be executed
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private bool CanDownloadOpenRSAKeyCommandExecute(object p) => IsHasRSASecretKeys();
+
+        #endregion
+
+        #region DownloadSecretRSAKeyCommand
+
+        /// <summary>
+        /// DownloadSecretRSAKeyCommand field
+        /// </summary>
+        public ICommand DownloadSecretRSAKeyCommand { get; }
+
+        /// <summary>
+        /// DownloadSecretRSAKeyCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        private void OnDownloadSecretRSAKeyCommandExecuted(object p)
+        {
+            OpenFileDialog openFileDialog = new()
+            {
+                Title = "Загрузить файл c закрытым ключом",
+                Filter = "Текстовый файл (*.txt)|*.txt"
+            };
+
+            bool? response = openFileDialog.ShowDialog();
+
+            if (response == false) return;
+
+            try
+            {
+                using StreamReader streamReader = new(openFileDialog.FileName);
+                var openKeyText = streamReader.ReadLine();
+
+                if (!string.IsNullOrEmpty(openKeyText))
+                {
+                    var secretKeyArr = openKeyText.Split(' ');
+                    var dText = secretKeyArr[0];
+                    var nText = secretKeyArr[1];
+
+                    if (int.TryParse(nText, out int nValue) &&
+                        int.TryParse(dText, out int dValue))
+                    {
+                        if (RSAEncryptor.IsPrimeNumber(dValue))
+                        {
+                            if (RSAEncryptor.GetGreatestCommonDevisor(dValue, nValue) == 1)
+                            {
+                                DValue = dValue;
+                            }
+                            else
+                            {
+                                MessageBox.Show("D и N не взаимопростые");
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("D должен быть простым числом");
+                        }
+
+
+                        if (!RSAEncryptor.IsPrimeNumber(nValue))
+                        {
+                            NValue = nValue;
+                        }
+                        else
+                        {
+                            MessageBox.Show("N не должен быть простым");
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Ключи должны быть целыми положительными числами");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Исходный файл пуст");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Can DownloadSecretRSAKeyCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private bool CanDownloadSecretRSAKeyCommandExecute(object p) => true;
+
+        #endregion
+
+        #region SaveSecretRSAKeyCommand
+
+        /// <summary>
+        /// SaveSecretRSAKeyCommand field
+        /// </summary>
+        public ICommand SaveSecretRSAKeyCommand { get; }
+
+        /// <summary>
+        /// SaveSecretRSAKeyCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        private void OnSaveSecretRSAKeyCommandExecuted(object p)
+        {
+            SaveFileDialog saveFileDialog = new()
+            {
+                Title = "Сохранить закрытый ключ",
+                Filter = "Текстовый файл (*.txt)|*.txt",
+                AddExtension = true
+            };
+
+            bool? response = saveFileDialog.ShowDialog();
+
+            if (response == false) return;
+
+            try
+            {
+                using StreamWriter streamWriter = new(saveFileDialog.FileName);
+                streamWriter.Write($"{DValue} {NValue}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Is SaveSecretRSAKeyCommand can be executed
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private bool CanSaveSecretRSAKeyCommandExecute(object p) => IsHasRSASecretKeys();
+
+        #endregion
+
+        #region SaveOpenRSAKeyCommand
+
+        /// <summary>
+        /// SaveOpenRSAKeyCommand field
+        /// </summary>
+        public ICommand SaveOpenRSAKeyCommand { get; }
+
+        /// <summary>
+        /// SaveSecretRSAKeyCommand execute method
+        /// </summary>
+        /// <param name="p"></param>
+        private void OnSaveOpenRSAKeyCommandExecuted(object p)
+        {
+            SaveFileDialog saveFileDialog = new()
+            {
+                Title = "Сохранить открытый ключ",
+                Filter = "Текстовый файл (*.txt)|*.txt",
+                AddExtension = true
+            };
+
+            bool? response = saveFileDialog.ShowDialog();
+
+            if (response == false) return;
+
+            try
+            {
+                using StreamWriter streamWriter = new(saveFileDialog.FileName);
+                streamWriter.Write($"{EValue} {NValue}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Is SaveOpenRSAKeyCommand can be executed
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private bool CanSaveOpenRSAKeyCommandExecute(object p) => IsHasRSAOpenKeys();
+
+        #endregion
+
         #endregion
 
         /// <summary>
@@ -581,6 +1066,27 @@ namespace InformationSecurity.ViewModels
 
             ResetKeyExchangeCommand = new RelayCommand(OnResetKeyExchangeCommandExecuted, 
                                                        CanResetKeyExchangeCommandExecute);
+
+            EncryptRSACommand = new RelayCommand(OnEncryptRSACommandExecuted, 
+                                                 CanEncryptRSACommandExecute);
+
+            DecryptRSACommand = new RelayCommand(OnDecryptRSACommandExecuted, 
+                                                 CanDecryptRSACommandExecute);
+
+            CalculateRSAKeysCommand = new RelayCommand(OnCalculateRSAKeysCommandExecuted, 
+                                                       CanCalculateRSAKeysCommandExecute);
+
+            DownloadSecretRSAKeyCommand = new RelayCommand(OnDownloadSecretRSAKeyCommandExecuted,
+                                                           CanDownloadSecretRSAKeyCommandExecute);
+
+            SaveSecretRSAKeyCommand = new RelayCommand(OnSaveSecretRSAKeyCommandExecuted, 
+                                                       CanSaveSecretRSAKeyCommandExecute);
+
+            DownloadOpenRSAKeyCommand = new RelayCommand(OnDownloadOpenRSAKeyCommandExecuted,
+                                                         CanDownloadOpenRSAKeyCommandExecute);
+
+            SaveOpenRSAKeyCommand = new RelayCommand(OnSaveOpenRSAKeyCommandExecuted, 
+                                                     CanSaveOpenRSAKeyCommandExecute);
         }
     }
 }
